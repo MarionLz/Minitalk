@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_putnbr_fd.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maax <maax@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: malauzie <malauzie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/09 16:37:14 by malauzie          #+#    #+#             */
-/*   Updated: 2024/01/31 11:25:01 by maax             ###   ########.fr       */
+/*   Updated: 2024/02/29 16:17:50 by malauzie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void	ft_putnbr_fd(int n, int fd)
 		ft_putnbr_fd(long_n / 10, fd);
 	}
 	result = (result * 10) + long_n % 10 + 48;
-	ft_putchar_fd('-', fd);
+	ft_putchar_fd(result, fd);
 }
 
 /*#include <stdio.h>

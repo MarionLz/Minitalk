@@ -1,18 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   client.c                                           :+:      :+:    :+:   */
+/*   client copy.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: malauzie <malauzie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/11 20:38:15 by maax              #+#    #+#             */
-/*   Updated: 2024/02/29 16:25:01 by malauzie         ###   ########.fr       */
+/*   Updated: 2024/02/29 15:34:58 by malauzie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minitalk.h"
-
-char	*str;
 
 void	ft_send_end_str(int pid_server, char end)
 {
@@ -30,61 +28,42 @@ void	ft_send_end_str(int pid_server, char end)
 	}
 }
 
-void	ft_send_bit(int pid_server)
+void	ft_send_bit(int pid_server, char *str)
 {
-	static int	cursor;
-	static int	i;
-	static int	len;
+	int	cursor;
+	int	i;
+	int	len;
 	
-	if (!i)
-		i = 0;
-	if (!cursor)
-		cursor = 0;
+	i = 0;
     len = ft_strlen(str);
-	if (i < len)
+	while (i < len)
 	{
-		if (cursor <= 15)
+		cursor = 0;
+		while (cursor <= 15)
 		{
 			if ((str[i] >> cursor) & 1)
 				kill(pid_server, SIGUSR2);
 			else
 				kill(pid_server, SIGUSR1);
 			cursor++;
+			usleep(10000);
 		}
-		else
-		{
-			i++;
-			cursor = 0;
-		}
-		ft_putnbr_fd(cursor, 1);
-		ft_putchar_fd('\n', 1);
+		i++;
 	}
-	if (i == len)
-	{
-		ft_send_end_str(pid_server, '\0');
-		i = 0;
-	}
+	ft_send_end_str(pid_server, '\0');
 }
 
-static void	ft_handle_signal(int signal, siginfo_t *info, void *context)
+static void	ft_handle_signal(int signal)
 {
-	(void)context;
-	(void)info;
 	if (signal == SIGUSR1)
-	{
 		ft_putstr_fd("Str received\n", 1);
-		exit(1);
-	}
-	if (signal == SIGUSR2)
-	{
-		ft_putstr_fd("Bit received\n", 1);
-		ft_send_bit(info->si_pid);
-	}
+	exit(1);
 }
 
 int main(int argc, char **argv)
 {
 	int					pid_server;
+	char				*str;
 	struct sigaction	s_sigaction;
 
 	if (argc != 3)
@@ -94,13 +73,10 @@ int main(int argc, char **argv)
 	}
 	pid_server = ft_atoi(argv[1]);
 	str = argv[2];
-	//ft_send_bit(pid_server);
 	ft_memset(&s_sigaction, 0, sizeof(struct sigaction));
-	s_sigaction.sa_sigaction = ft_handle_signal;
-	s_sigaction.sa_flags = SA_SIGINFO;
+	s_sigaction.sa_handler = ft_handle_signal;
 	sigaction(SIGUSR1, &s_sigaction, 0);
-	sigaction(SIGUSR2, &s_sigaction, 0);
-	ft_send_bit(pid_server);
+	ft_send_bit(pid_server, str);
 	while(1)
 	{
 		pause();

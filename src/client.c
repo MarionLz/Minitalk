@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   client.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: malauzie <malauzie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: maax <maax@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/11 20:38:15 by maax              #+#    #+#             */
-/*   Updated: 2024/02/29 16:25:01 by malauzie         ###   ########.fr       */
+/*   Updated: 2024/03/01 11:24:59 by maax             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,17 +16,15 @@ char	*str;
 
 void	ft_send_end_str(int pid_server, char end)
 {
-	int	cursor;
+	static int	cursor;
 
-	cursor = 0;
-	while (cursor <= 15)
+	if (cursor <= 15)
 	{
 		if ((end >> cursor) & 1)
 			kill(pid_server, SIGUSR2);
 		else
 			kill(pid_server, SIGUSR1);
 		cursor++;
-		usleep(1000);
 	}
 }
 
@@ -35,12 +33,9 @@ void	ft_send_bit(int pid_server)
 	static int	cursor;
 	static int	i;
 	static int	len;
-	
-	if (!i)
-		i = 0;
-	if (!cursor)
-		cursor = 0;
-    len = ft_strlen(str);
+
+	if (!len)
+		len = ft_strlen(str);
 	if (i < len)
 	{
 		if (cursor <= 15)
@@ -51,25 +46,19 @@ void	ft_send_bit(int pid_server)
 				kill(pid_server, SIGUSR1);
 			cursor++;
 		}
-		else
+		if (cursor == 16)
 		{
 			i++;
 			cursor = 0;
 		}
-		ft_putnbr_fd(cursor, 1);
-		ft_putchar_fd('\n', 1);
 	}
-	if (i == len)
-	{
+	else if (i == len)
 		ft_send_end_str(pid_server, '\0');
-		i = 0;
-	}
 }
 
 static void	ft_handle_signal(int signal, siginfo_t *info, void *context)
 {
 	(void)context;
-	(void)info;
 	if (signal == SIGUSR1)
 	{
 		ft_putstr_fd("Str received\n", 1);
@@ -94,13 +83,12 @@ int main(int argc, char **argv)
 	}
 	pid_server = ft_atoi(argv[1]);
 	str = argv[2];
-	//ft_send_bit(pid_server);
+	ft_send_bit(pid_server);
 	ft_memset(&s_sigaction, 0, sizeof(struct sigaction));
 	s_sigaction.sa_sigaction = ft_handle_signal;
 	s_sigaction.sa_flags = SA_SIGINFO;
 	sigaction(SIGUSR1, &s_sigaction, 0);
 	sigaction(SIGUSR2, &s_sigaction, 0);
-	ft_send_bit(pid_server);
 	while(1)
 	{
 		pause();

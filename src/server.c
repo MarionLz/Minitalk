@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: malauzie <malauzie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: maax <maax@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/11 20:38:15 by maax              #+#    #+#             */
-/*   Updated: 2024/02/29 16:11:23 by malauzie         ###   ########.fr       */
+/*   Updated: 2024/03/01 11:25:01 by maax             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ void	ft_store_char(char **str1, char **str2, char c, pid_t *client_pid)
 	{
 		*str1 = ft_strjoin_and_free(*str1, *str2);
 	}
-	else
+	if ((*str2)[0] == '\0')
 	{
 		ft_print_str(str1);
 		kill(*client_pid, SIGUSR1);
@@ -47,11 +47,7 @@ static void	ft_handle_signal(int signal, siginfo_t *info, void *context)
 		client_pid = info->si_pid;
 	if (!str1)
 		str1 = ft_strdup("");
-	if (!c)
-		c = 0;
-	if (!cursor)
-		cursor = 0;
-	ft_putstr_fd("OK\n", 1);
+	kill(client_pid, SIGUSR2);
 	if (signal == SIGUSR2)
 		c |= (1 << cursor);
 	if (cursor == 15)
@@ -64,7 +60,6 @@ static void	ft_handle_signal(int signal, siginfo_t *info, void *context)
 		return ;
 	}
 	cursor++;
-	kill(client_pid, SIGUSR2);
 }
 
 int main(void)

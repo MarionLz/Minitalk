@@ -6,7 +6,7 @@
 /*   By: maax <maax@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/11 20:38:15 by maax              #+#    #+#             */
-/*   Updated: 2024/03/01 11:24:59 by maax             ###   ########.fr       */
+/*   Updated: 2024/03/04 15:37:44 by maax             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,10 +65,7 @@ static void	ft_handle_signal(int signal, siginfo_t *info, void *context)
 		exit(1);
 	}
 	if (signal == SIGUSR2)
-	{
-		ft_putstr_fd("Bit received\n", 1);
 		ft_send_bit(info->si_pid);
-	}
 }
 
 int main(int argc, char **argv)

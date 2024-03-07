@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   client.c                                           :+:      :+:    :+:   */
+/*   client_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: maax <maax@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/11 20:38:15 by maax              #+#    #+#             */
-/*   Updated: 2024/03/07 13:36:18 by maax             ###   ########.fr       */
+/*   Updated: 2024/03/07 13:36:23 by maax             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,11 +26,8 @@ void	send_end_str(int pid_server, char end)
 			kill(pid_server, SIGUSR1);
 		cursor_end++;
 	}
-	if (cursor_end == 8)
-	{
+	else
 		cursor_end = 0;
-		exit(1);
-	}
 }
 
 void	send_bit(int pid_server)
@@ -61,6 +58,11 @@ void	send_bit(int pid_server)
 static void	handle_signal(int signal, siginfo_t *info, void *context)
 {
 	(void)context;
+	if (signal == SIGUSR1)
+	{
+		ft_putstr_fd("Str received\n", 1);
+		exit(1);
+	}
 	if (signal == SIGUSR2)
 	{
 		send_bit(info->si_pid);
@@ -83,6 +85,7 @@ int main(int argc, char **argv)
 	ft_memset(&s_sigaction, 0, sizeof(struct sigaction));
 	s_sigaction.sa_sigaction = handle_signal;
 	s_sigaction.sa_flags = SA_SIGINFO;
+	sigaction(SIGUSR1, &s_sigaction, 0);
 	sigaction(SIGUSR2, &s_sigaction, 0);
 	while(1)
 	{

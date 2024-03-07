@@ -1,37 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strjoin_and_free.c                              :+:      :+:    :+:   */
+/*   utils_str.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: maax <maax@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/31 10:37:30 by maax              #+#    #+#             */
-/*   Updated: 2024/03/05 10:19:38 by maax             ###   ########.fr       */
+/*   Created: 2023/10/19 13:37:05 by malauzie          #+#    #+#             */
+/*   Updated: 2024/03/07 13:28:51 by maax             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/libft.h"
+#include "../inc/ft_printf.h"
 
-char	*ft_strjoin_and_free(char *s1, char *s2)
+void	my_ft_putchar(char c, int *len)
 {
-	unsigned int	i;
-	unsigned int	j;
-	char			*str;
+	*len += write(1, &c, 1);
+}
+
+void	my_ft_putstr(char *str, int *len)
+{
+	int	i;
 
 	i = 0;
-	j = 0;
-	str = (char *)malloc((ft_strlen(s1) + ft_strlen(s2) + 1) * sizeof(char));
-	if (str == NULL)
+	while (str[i])
 	{
-		ft_putstr_fd("malloc failed\n", 1);
-		return (NULL);
+		*len += write(1, &str[i], 1);
+		i++;
 	}
-	while (s1[j])
-		str[i++] = s1[j++];
-	j = 0;
-	while (s2[j])
-		str[i++] = s2[j++];
-	str[i] = '\0';
-	free(s1);
-	return (str);
 }
